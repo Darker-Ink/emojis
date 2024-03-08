@@ -12,12 +12,19 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v4
+              with:
+                  submodules: true
 
             - name: Install
               run: npm install
 
             - name: Update Emojis
               run: npm run update
+
+            - name: Pull & update submodules recursively
+              run: |
+                  git submodule update --init --recursive
+                  git submodule update --recursive --remote
 
             - name: Commit Changes
               run: |
