@@ -1,8 +1,9 @@
 name: Update Emojis
 
 on:
+    workflow_dispatch:
     schedule:
-        - cron: "0,15,30,45 * * * *"
+        - cron: "0,15,30,45 * * * *" # Runs at 0, 15, 30, and 45 minutes past the hour.
 
 jobs:
     update:
