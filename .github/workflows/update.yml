@@ -1,0 +1,35 @@
+name: Update Emojis
+
+on:
+    workflow_dispatch:
+    schedule:
+        - cron: "0,15,30,45 * * * *" # Runs at 0, 15, 30, and 45 minutes past the hour.
+
+jobs:
+    update:
+        name: update-all-emojis
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  submodules: true
+
+            - name: Install
+              run: npm install
+
+            - name: Update Emojis
+              run: npm run update
+
+            - name: Pull & update submodules recursively
+              run: |
+                  git submodule update --init --recursive
+                  git submodule update --recursive --remote
+
+            - name: Commit new data
+              uses: stefanzweifel/git-auto-commit-action@v4.16.0
+              with:
+                  commit_message: "Update Emojiis Data"
+                  commit_user_name: GitHub Action
+                  commit_user_email: actions@github.com
+                  commit_author: GitHub Action <actions@github.com>
