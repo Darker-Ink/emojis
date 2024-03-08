@@ -7,7 +7,8 @@
     "microsoft": "node scripts/microsoft.js",
     "google": "node scripts/google.js",
     "twitter": "node scripts/twitter.js",
-    "update": "npm run google && npm run twitter && npm run microsoft"
+    "flags": "node scripts/flags.js",
+    "update": "npm run google && npm run twitter && npm run microsoft && npm run flags"
   },
   "author": "DarkerInk",
   "license": "MIT",
