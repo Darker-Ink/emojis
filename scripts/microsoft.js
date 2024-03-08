@@ -1,5 +1,6 @@
 const fs = require("node:fs/promises");
-const path = "../third_party/fluentui-emoji/assets";
+const path = require("node:path");
+const filePath = path.join(__dirname, "../third_party/fluentui-emoji/assets");
 
 /*
     ? 1. We first read the directory of assets, and push them to the assets array.
@@ -58,13 +59,13 @@ const skinTones = [
 
 const start = async () => {
     try {
-        await fs.access("../output/fluentui-emoji");
+        await fs.access(path.join(__dirname, "../output/fluentui-emoji"));
     } catch (e) {
-        await fs.mkdir("../output").catch(() => {});
-        await fs.mkdir("../output/fluentui-emoji").catch(() => {});
+        await fs.mkdir(path.join(__dirname, "../output")).catch(() => {});
+        await fs.mkdir(path.join(__dirname, "../output/fluentui-emoji")).catch(() => {});
     }
 
-    const files = await fs.readdir(path);
+    const files = await fs.readdir(filePath);
 
     for (let file of files) {
         assets.push(file);
@@ -76,7 +77,7 @@ const start = async () => {
     const emojiData = [];
 
     for (let asset of assets) {
-        const data = await fs.readFile(`${path}/${asset}/metadata.json`, "utf-8");
+        const data = await fs.readFile(`${filePath}/${asset}/metadata.json`, "utf-8");
 
         /**
          * @type {parsedData}
@@ -85,21 +86,21 @@ const start = async () => {
 
         if (parsed.unicodeSkintones) {
             for (let skin of skinTones) {
-                const fileName = await fs.readdir(`${path}/${asset}/${skin.name}/Color`);
+                const fileName = await fs.readdir(`${filePath}/${asset}/${skin.name}/Color`);
 
                 if (fileName.length > 0) {
                     emojiData.push({
                         name: `${parsed.unicode}-${skin.code}`,
-                        path: `${path}/${asset}/${skin.name}/Color/${fileName[0]}`
+                        path: `${filePath}/${asset}/${skin.name}/Color/${fileName[0]}`
                     });
                 }
             }
         } else {
-            const fileName = await fs.readdir(`${path}/${asset}/Color`);
+            const fileName = await fs.readdir(`${filePath}/${asset}/Color`);
             if (fileName.length > 0) {
                 emojiData.push({
                     name: parsed.unicode,
-                    path: `${path}/${asset}/Color/${fileName[0]}`
+                    path: `${filePath}/${asset}/Color/${fileName[0]}`
                 });
             }
         }
@@ -109,7 +110,7 @@ const start = async () => {
     for (let emoji of emojiData) {
         const name = emoji.name.replaceAll(' ', '-').toLowerCase().replace(/^-|-$/g, '');
 
-        await fs.copyFile(emoji.path, `../output/fluentui-emoji/${name}.svg`);
+        await fs.copyFile(emoji.path, path.join(__dirname, `../output/fluentui-emoji/${name}.svg`));
     }
 
     console.log("Done");

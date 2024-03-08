@@ -1,5 +1,6 @@
 const fs = require("node:fs/promises");
-const path = "../third_party/twemoji/assets/svg";
+const path = require("node:path");
+const filePath = path.join(__dirname, "../third_party/twemoji/assets/svg");
 
 
 /*
@@ -12,20 +13,20 @@ const assets = [];
 
 const start = async () => {
     try {
-        await fs.readdir("../output/twemoji");
+        await fs.readdir(path.join(__dirname, "../output/twemoji"));
     } catch (e) {
-        await fs.mkdir("../output/").catch(() => {});
-        await fs.mkdir("../output/twemoji").catch(() => {});
+        await fs.mkdir(path.join(__dirname, "../output/")).catch(() => {});
+        await fs.mkdir(path.join(__dirname, "../output/twemoji")).catch(() => {});
     }
 
-    const files = await fs.readdir(path);
+    const files = await fs.readdir(filePath);
 
     for (const file of files) {
         assets.push(file);
     }
 
     for (const asset of assets) {
-        await fs.copyFile(`${path}/${asset}`, `../output/twemoji/${asset}`);
+        await fs.copyFile(`${filePath}/${asset}`, path.join(__dirname, `../output/twemoji/${asset}`));
     }
 
     console.log("Done");

@@ -1,5 +1,7 @@
 const fs = require("node:fs/promises");
-const path = "../third_party/noto-emoji/svg";
+const path = require("node:path");
+
+const filePath = path.join(__dirname, "../third_party/noto-emoji/svg");
 
 
 /*
@@ -12,13 +14,13 @@ const assets = [];
 
 const start = async () => {
     try {
-        await fs.readdir("../output/noto-emoji");
+        await fs.readdir(path.join(__dirname, "../output/noto-emoji"));
     } catch (e) {
-        await fs.mkdir("../output/").catch(() => {});
-        await fs.mkdir("../output/noto-emoji").catch(() => {});
+        await fs.mkdir(path.join(__dirname, "../output/")).catch(() => {});
+        await fs.mkdir(path.join(__dirname, "../output/noto-emoji")).catch(() => {});
     }
 
-    const files = await fs.readdir(path);
+    const files = await fs.readdir(filePath);
 
     for (const file of files) {
         assets.push(file);
@@ -27,7 +29,7 @@ const start = async () => {
     for (const asset of assets) {
         const name = asset.replace("emoji_u", "").replace(/_/g, "-");
 
-        await fs.copyFile(`${path}/${asset}`, `../output/noto-emoji/${name}`);
+        await fs.copyFile(`${filePath}/${asset}`, path.join(__dirname, `../output/noto-emoji/${name}`));
     }
 
     console.log("Done");
