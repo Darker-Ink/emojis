@@ -154,7 +154,7 @@ const parse = (unicode) => {
             return true;
         }
 
-        const nonQualified = emoji.non_qualified && emoji.non_qualified.toLowerCase() === unicode.toLowerCase();
+        const nonQualified = emoji.non_qualified && (emoji.non_qualified.startsWith("00") ? emoji.non_qualified.slice(2).toLowerCase() === unicode.toLowerCase() : emoji.non_qualified.toLowerCase() === unicode.toLowerCase());
 
         if (nonQualified) {
             return true;
@@ -172,7 +172,7 @@ const parse = (unicode) => {
                     return true;
                 }
 
-                if (skin.non_qualified && skin.non_qualified.toLowerCase() === unicode.toLowerCase()) {
+                if (skin.non_qualified && (skin.non_qualified.startsWith("00") ? skin.non_qualified.slice(2).toLowerCase() === unicode.toLowerCase() : skin.non_qualified.toLowerCase() === unicode.toLowerCase())) {
                     return true;
                 }
 
@@ -191,7 +191,7 @@ const parse = (unicode) => {
 
     const skinTone = foundEmoji.skin_variations && Object.entries(foundEmoji.skin_variations)
         .find(([,skin]) => skin.unified.toLowerCase() === unicode.toLowerCase()
-            || skin.non_qualified && skin.non_qualified.toLowerCase() === unicode.toLowerCase()
+            || skin.non_qualified && (skin.non_qualified.startsWith("00") ? skin.non_qualified.slice(2).toLowerCase() === unicode.toLowerCase() : skin.non_qualified.toLowerCase() === unicode.toLowerCase())
             || skin.google && skin.google.toLowerCase() === unicode.toLowerCase());
 
     return {
