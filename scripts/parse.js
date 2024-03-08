@@ -27,16 +27,24 @@ const skinTones = [
     }
 ];
 
+const fixUnicode = (unicode) => {
+    if (unicode.startsWith("00")) {
+        return unicode.slice(2);
+    }
+
+    return unicode;
+}
+
 // ? fuzzInReverse is like fuzzyParse, but instead of checking if the emoji.unified for example starts with unicode, we do the opposite
 const fuzzInReverse = (unicode) => {
     const foundEmoji = emojiDatasource.find(emoji => {
-        const uni = unicode.toLowerCase().startsWith(emoji.unified.toLowerCase());
+        const uni = unicode.toLowerCase().startsWith(fixUnicode(emoji.unified).toLowerCase());
 
         if (uni) {
             return true;
         }
 
-        const nonQualified = emoji.non_qualified && (emoji.non_qualified.startsWith("00") ? emoji.non_qualified.slice(2).toLowerCase() === unicode.toLowerCase() : emoji.non_qualified.toLowerCase() === unicode.toLowerCase());
+        const nonQualified = emoji.non_qualified && unicode.toLowerCase().startsWith(fixUnicode(emoji.non_qualified).toLowerCase());
 
         if (nonQualified) {
             return true;
@@ -54,7 +62,7 @@ const fuzzInReverse = (unicode) => {
                     return true;
                 }
 
-                if (skin.non_qualified && (skin.non_qualified.startsWith("00") ? skin.non_qualified.slice(2).toLowerCase() === unicode.toLowerCase() : skin.non_qualified.toLowerCase() === unicode.toLowerCase())) {
+                if (skin.non_qualified && unicode.toLowerCase().startsWith(fixUnicode(skin.non_qualified).toLowerCase())) {
                     return true;
                 }
 
@@ -77,7 +85,7 @@ const fuzzInReverse = (unicode) => {
 
     const skinTone = foundEmoji.skin_variations && Object.entries(foundEmoji.skin_variations)
         .find(([, skin]) => unicode.toLowerCase().startsWith(skin.unified.toLowerCase())
-            || skin.non_qualified && (skin.non_qualified.startsWith("00") ? skin.non_qualified.slice(2).toLowerCase() === unicode.toLowerCase() : skin.non_qualified.toLowerCase() === unicode.toLowerCase())
+            || skin.non_qualified && unicode.toLowerCase().startsWith(fixUnicode(skin.non_qualified).toLowerCase())
             || skin.google && unicode.toLowerCase().startsWith(skin.google.toLowerCase()));
 
     return {
@@ -97,7 +105,7 @@ const fuzzyParse = (unicode) => {
             return true;
         }
 
-        const nonQualified = emoji.non_qualified && (emoji.non_qualified.startsWith("00") ? emoji.non_qualified.slice(2).toLowerCase() === unicode.toLowerCase() : emoji.non_qualified.toLowerCase() === unicode.toLowerCase());
+        const nonQualified = emoji.non_qualified && fixUnicode(emoji.non_qualified).toLowerCase().startsWith(unicode.toLowerCase());
 
         if (nonQualified) {
             return true;
@@ -115,7 +123,7 @@ const fuzzyParse = (unicode) => {
                     return true;
                 }
 
-                if (skin.non_qualified && (skin.non_qualified.startsWith("00") ? skin.non_qualified.slice(2).toLowerCase() === unicode.toLowerCase() : skin.non_qualified.toLowerCase() === unicode.toLowerCase())) {
+                if (skin.non_qualified && fixUnicode(skin.non_qualified).toLowerCase().startsWith(unicode.toLowerCase())) {
                     return true;
                 }
 
@@ -134,7 +142,7 @@ const fuzzyParse = (unicode) => {
 
     const skinTone = foundEmoji.skin_variations && Object.entries(foundEmoji.skin_variations)
         .find(([, skin]) => skin.unified.toLowerCase().startsWith(unicode.toLowerCase())
-            || skin.non_qualified && (skin.non_qualified.startsWith("00") ? skin.non_qualified.slice(2).toLowerCase() === unicode.toLowerCase() : skin.non_qualified.toLowerCase() === unicode.toLowerCase())
+            || skin.non_qualified && fixUnicode(skin.non_qualified).toLowerCase().startsWith(unicode.toLowerCase())
             || skin.google && skin.google.toLowerCase().startsWith(unicode.toLowerCase()));
 
     return {
@@ -145,15 +153,16 @@ const fuzzyParse = (unicode) => {
 };
 
 
+
 const parse = (unicode) => {
     const foundEmoji = emojiDatasource.find(emoji => {
-        const uni = emoji.unified.toLowerCase() === unicode.toLowerCase();
+        const uni = fixUnicode(emoji.unified).toLowerCase() === unicode.toLowerCase();
 
         if (uni) {
             return true;
         }
 
-        const nonQualified = emoji.non_qualified && (emoji.non_qualified.startsWith("00") ? emoji.non_qualified.slice(2).toLowerCase() === unicode.toLowerCase() : emoji.non_qualified.toLowerCase() === unicode.toLowerCase());
+        const nonQualified = emoji.non_qualified && fixUnicode(emoji.non_qualified).toLowerCase() === unicode.toLowerCase();
 
         if (nonQualified) {
             return true;
@@ -171,7 +180,7 @@ const parse = (unicode) => {
                     return true;
                 }
 
-                if (skin.non_qualified && (skin.non_qualified.startsWith("00") ? skin.non_qualified.slice(2).toLowerCase() === unicode.toLowerCase() : skin.non_qualified.toLowerCase() === unicode.toLowerCase())) {
+                if (skin.non_qualified && fixUnicode(skin.non_qualified).toLowerCase() === unicode.toLowerCase()) {
                     return true;
                 }
 
@@ -190,7 +199,7 @@ const parse = (unicode) => {
 
     const skinTone = foundEmoji.skin_variations && Object.entries(foundEmoji.skin_variations)
         .find(([, skin]) => skin.unified.toLowerCase() === unicode.toLowerCase()
-            || skin.non_qualified && (skin.non_qualified.startsWith("00") ? skin.non_qualified.slice(2).toLowerCase() === unicode.toLowerCase() : skin.non_qualified.toLowerCase() === unicode.toLowerCase())
+            || skin.non_qualified && fixUnicode(skin.non_qualified).toLowerCase() === unicode.toLowerCase()
             || skin.google && skin.google.toLowerCase() === unicode.toLowerCase());
 
     return {
@@ -199,7 +208,5 @@ const parse = (unicode) => {
         skinToneType: skinTone ? skinTones.find(skin => skin.code.toLowerCase() === skinTone[0].toLowerCase()) : null
     };
 };
-
-
 
 module.exports = parse;
