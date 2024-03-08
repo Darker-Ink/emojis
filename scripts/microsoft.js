@@ -1,5 +1,7 @@
 const fs = require("node:fs/promises");
 const path = require("node:path");
+const emojiDatasource = require("emoji-datasource");
+const parse = require("./parse.js");
 const filePath = path.join(__dirname, "../third_party/fluentui-emoji/assets");
 
 /*
@@ -30,39 +32,19 @@ const filePath = path.join(__dirname, "../third_party/fluentui-emoji/assets");
  * @type {Array<string>}
  */
 const assets = [];
-const skinTones = [
-    {
-        name: 'Default',
-        code: ''
-    },
-    {
-        name: 'Light',
-        code: '1F3FB'
-    },
-    {
-        name: 'Medium-Light',
-        code: '1F3FC'
-    },
-    {
-        name: 'Medium',
-        code: '1F3FD'
-    },
-    {
-        name: 'Medium-Dark',
-        code: '1F3FE'
-    },
-    {
-        name: 'Dark',
-        code: '1F3FF'
-    }
-]
+
+const emojiToUnicode = (emoji) => {
+    const scalars = Array.from(emoji);
+
+    return scalars.map(scalar => scalar.codePointAt(0).toString(16)).join('-');
+};
 
 const start = async () => {
     try {
         await fs.access(path.join(__dirname, "../output/fluentui-emoji"));
     } catch (e) {
-        await fs.mkdir(path.join(__dirname, "../output")).catch(() => {});
-        await fs.mkdir(path.join(__dirname, "../output/fluentui-emoji")).catch(() => {});
+        await fs.mkdir(path.join(__dirname, "../output")).catch(() => { });
+        await fs.mkdir(path.join(__dirname, "../output/fluentui-emoji")).catch(() => { });
     }
 
     const files = await fs.readdir(filePath);
@@ -82,39 +64,66 @@ const start = async () => {
         /**
          * @type {parsedData}
          */
-        const parsed = JSON.parse(data);
+        const metaData = JSON.parse(data);
 
-        if (parsed.unicodeSkintones) {
-            for (let skin of skinTones) {
-                const fileName = await fs.readdir(`${filePath}/${asset}/${skin.name}/Color`);
+        const unicode = emojiToUnicode(metaData.glyph);
 
-                if (fileName.length > 0) {
-                    emojiData.push({
-                        name: `${parsed.unicode.split(" ")[0].toLowerCase()}-${skin.name.toLowerCase()}`,
-                        path: `${filePath}/${asset}/${skin.name}/Color/${fileName[0]}`
-                    });
+        const parsed = parse(unicode);
+
+        if (!parsed) {
+            console.log("Could not find", unicode);
+
+            continue;
+        }
+
+        if (metaData.unicodeSkintones) {
+            for (const skin of metaData.unicodeSkintones) {
+                const parsed = parse(skin.replaceAll(" ", "-"));
+
+                if (!parsed) {
+                    console.log("Could not find", skin);
+
+                    continue;
+                }
+
+                if (parsed.skinTone) {
+                    const fileName = await fs.readdir(`${filePath}/${asset}/${parsed.skinToneType.name}/Color`);
+
+                    if (fileName.length > 0) {
+                        emojiData.push({
+                            name: parsed.name,
+                            path: `${filePath}/${asset}/${parsed.skinToneType.name}/Color/${fileName[0]}`
+                        });
+                    }
+
+                    continue;
+                } else {
+                    const fileName = await fs.readdir(`${filePath}/${asset}/Default/Color`);
+
+                    if (fileName.length > 0) {
+                        emojiData.push({
+                            name: parsed.name,
+                            path: `${filePath}/${asset}/Default/Color/${fileName[0]}`
+                        });
+                    }
+
+                    continue;
                 }
             }
         } else {
             const fileName = await fs.readdir(`${filePath}/${asset}/Color`);
+
             if (fileName.length > 0) {
                 emojiData.push({
-                    name: parsed.unicode.split(" ")[0].toLowerCase(),
+                    name: parsed.name,
                     path: `${filePath}/${asset}/Color/${fileName[0]}`
                 });
             }
         }
-
     }
 
-    for (let emoji of emojiData) {
-        let name = emoji.name.replaceAll(' ', '-').toLowerCase().replace(/^-|-$/g, '');
-
-        if (name.startsWith('00')) {
-            name = name.slice(2);
-        }
-
-        await fs.copyFile(emoji.path, path.join(__dirname, `../output/fluentui-emoji/${name}.svg`));
+    for (const emoji of emojiData) {
+        await fs.copyFile(emoji.path, path.join(__dirname, `../output/fluentui-emoji/${emoji.name}.svg`));
     }
 
     console.log("Done");

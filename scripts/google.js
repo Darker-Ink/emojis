@@ -1,5 +1,6 @@
 const fs = require("node:fs/promises");
 const path = require("node:path");
+const parse = require("./parse.js");
 
 const filePath = path.join(__dirname, "../third_party/noto-emoji/svg");
 
@@ -29,7 +30,15 @@ const start = async () => {
     for (const asset of assets) {
         const name = asset.replace("emoji_u", "").replace(/_/g, "-");
 
-        await fs.copyFile(`${filePath}/${asset}`, path.join(__dirname, `../output/noto-emoji/${name}`));
+        const parsed = parse(name.slice(0, -4));
+
+        if (!parsed.name) {
+            console.log("Could not find", name, asset);
+            
+            continue;
+        }
+
+        await fs.copyFile(`${filePath}/${asset}`, path.join(__dirname, `../output/noto-emoji/${parsed.name}.svg`));
     }
 
     console.log("Done");

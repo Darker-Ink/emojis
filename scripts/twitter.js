@@ -1,5 +1,6 @@
 const fs = require("node:fs/promises");
 const path = require("node:path");
+const parse = require("./parse.js");
 const filePath = path.join(__dirname, "../third_party/twemoji/assets/svg");
 
 
@@ -26,7 +27,15 @@ const start = async () => {
     }
 
     for (const asset of assets) {
-        await fs.copyFile(`${filePath}/${asset}`, path.join(__dirname, `../output/twemoji/${asset}`));
+        const parsed = parse(asset.slice(0, -4));
+
+        if (!parsed.name) {
+            console.log("Could not find", asset);
+            
+            continue;
+        }
+
+        await fs.copyFile(`${filePath}/${asset}`, path.join(__dirname, `../output/twemoji/${parsed.name}.svg`));
     }
 
     console.log("Done");

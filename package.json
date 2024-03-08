@@ -7,8 +7,11 @@
     "microsoft": "node scripts/microsoft.js",
     "google": "node scripts/google.js",
     "twitter": "node scripts/twitter.js",
-    "update": "npm run microsoft && npm run google && npm run twitter"
+    "update": "npm run google && npm run twitter && npm run microsoft"
   },
   "author": "DarkerInk",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "emoji-datasource": "^15.1.2"
+  }
 }
