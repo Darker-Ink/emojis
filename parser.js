@@ -1,4 +1,10 @@
-const emojiDatasource = require("emoji-datasource");
+/*
+
+This is the parser you can use for generating the emoji urls.
+
+*/
+
+const emojiDatasource = require("emoji-datasource")
 
 const skinTones = [
     {
@@ -145,7 +151,8 @@ const fuzzyParse = (unicode) => {
 };
 
 
-const parse = (unicode) => {
+
+const emojiParser = (unicode) => {
     const foundEmoji = emojiDatasource.find(emoji => {
         const uni = emoji.unified.toLowerCase() === unicode.toLowerCase();
 
@@ -202,4 +209,29 @@ const parse = (unicode) => {
 
 
 
-module.exports = parse;
+const baseUrl = "https://cdn.jsdelivr.net/gh/Darker-Ink/emojis/output";
+
+const emojiToUnicode = (emoji) => {
+    const scalars = Array.from(emoji);
+
+    return scalars.map(scalar => scalar?.codePointAt(0)?.toString(16)).join("-");
+};
+
+const parse = (unicode, options) => {
+    const style = options.style ?? "twemoji";
+    const basedUrl = options.baseUrl ?? baseUrl;
+
+    const emojiUnicode = emojiToUnicode(unicode);
+
+    const parsed = emojiParser(emojiUnicode);
+
+    console.log(parsed, emojiUnicode);
+
+    if (!parsed.name) {
+        return null;
+    }
+
+    return `${basedUrl}/${style}/${parsed.name}.svg`;
+};
+
+export default parse;
