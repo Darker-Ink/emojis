@@ -1,9 +1,9 @@
-[submodule "thirdParty/fluentui-emoji"]
-	path = thirdParty/fluentui-emoji
+[submodule "third_party/fluentui-emoji"]
+	path = third_party/fluentui-emoji
 	url = https://github.com/microsoft/fluentui-emoji
-[submodule "thirdParty/noto-emoji"]
-	path = thirdParty/noto-emoji
+[submodule "third_party/noto-emoji"]
+	path = third_party/noto-emoji
 	url = https://github.com/googlefonts/noto-emoji
-[submodule "thirdParty/twemoji"]
-	path = thirdParty/twemoji
+[submodule "third_party/twemoji"]
+	path = third_party/twemoji
 	url = https://github.com/jdecked/twemoji

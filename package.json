@@ -1,0 +1,14 @@
+{
+  "name": "emojis",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "microsoft": "node scripts/microsoft.js",
+    "google": "node scripts/google.js",
+    "twitter": "node scripts/twitter.js",
+    "update": "npm run microsoft && npm run google && npm run twitter"
+  },
+  "author": "DarkerInk",
+  "license": "MIT"
+}
