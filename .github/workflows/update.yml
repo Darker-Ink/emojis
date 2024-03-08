@@ -26,10 +26,10 @@ jobs:
                   git submodule update --init --recursive
                   git submodule update --recursive --remote
 
-            - name: Commit Changes
-              run: |
-                git config --local user.email "action@github.com"
-                git config --local user.name "GitHub Action"
-                git add -A .
-                git commit -m 'Update Emojis'
-                git push
+            - name: Commit new data
+              uses: stefanzweifel/git-auto-commit-action@v4.16.0
+              with:
+                  commit_message: "Update Emojiis Data"
+                  commit_user_name: GitHub Action
+                  commit_user_email: actions@github.com
+                  commit_author: GitHub Action <actions@github.com>
