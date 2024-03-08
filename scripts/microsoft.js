@@ -114,12 +114,6 @@ const start = async () => {
             name = name.slice(2);
         }
 
-        await fs.copyFile(emoji.path, `../output/fluentui-emoji/${name}.svg`);
-    }
-
-    for (let emoji of emojiData) {
-        const name = emoji.name.replaceAll(' ', '-').toLowerCase().replace(/^-|-$/g, '');
-
         await fs.copyFile(emoji.path, path.join(__dirname, `../output/fluentui-emoji/${name}.svg`));
     }
 
