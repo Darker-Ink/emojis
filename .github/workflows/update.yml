@@ -18,13 +18,13 @@ jobs:
             - name: Install
               run: npm install
 
-            - name: Update Emojis
-              run: npm run update
-
             - name: Pull & update submodules recursively
               run: |
                   git submodule update --init --recursive
                   git submodule update --recursive --remote
+
+            - name: Update Emojis
+              run: npm run update
 
             - name: Commit new data
               uses: stefanzweifel/git-auto-commit-action@v4.16.0
